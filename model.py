@@ -18,14 +18,51 @@ class User(db.Model):
     __tablename__ = "users"
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    email = db.Column(db.String(64), nullable=True)
+    email = db.Column(db.String(64), nullable=True) # nullable = True means its optional?
     password = db.Column(db.String(64), nullable=True)
     age = db.Column(db.Integer, nullable=True)
     zipcode = db.Column(db.String(15), nullable=True)
 
+    #db.String and db.Integer are imported from SQLAlchemy
+
+    def __repr__(self):
+        """Provide helpful representation when printed"""
+        return "<User user_id = {}, email={}>".format(self.user_id, self.email)
+
 
 # Put your Movie and Rating model classes here.
+class Movie(db.Model):
+    """All the movies in the ratings website"""
 
+    __tablename__ = "movies"
+
+    movie_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    title = db.Column(db.String(120), nullable=False)
+    released_at = db.Column(db.DateTime, nullable=False)
+    imdb_url = db.Column(db.String(120), nullable=False)
+
+    def __repr__(self):
+        """Provide helpful representation when printed"""
+        return """<Movie movie_id={} title={} released_at={} imdb_url={}>
+        """.format(self.movie_id, self.title, self.released_at, self.imdb_url)
+
+
+class Rating(db.Model):
+    """All the ratings for the ratings website"""
+
+    __tablename__ = "ratings"
+
+    rating_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    movie_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
+    score = db.Column(db.Integer, nullable=False)
+
+    def __repr__(self):
+        """Provide helpful representation when printed"""
+        return """<Rating rating_id={} movie_id={} user_id={} score={}>
+        """.format(self.rating_id, self.movie_id, self.user_id, self.score)
+
+        
 
 ##############################################################################
 # Helper functions
