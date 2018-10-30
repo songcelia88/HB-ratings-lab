@@ -18,12 +18,14 @@ class User(db.Model):
     __tablename__ = "users"
 
     user_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    email = db.Column(db.String(64), nullable=True) # nullable = True means its optional?
+    email = db.Column(db.String(64), nullable=True) # should we make this unique?
     password = db.Column(db.String(64), nullable=True)
     age = db.Column(db.Integer, nullable=True)
     zipcode = db.Column(db.String(15), nullable=True)
 
     #db.String and db.Integer are imported from SQLAlchemy
+
+    # ratings = db.relationship('Rating') # user can have multiple ratings
 
     def __repr__(self):
         """Provide helpful representation when printed"""
@@ -41,6 +43,8 @@ class Movie(db.Model):
     released_at = db.Column(db.DateTime, nullable=False)
     imdb_url = db.Column(db.String(200), nullable=False)
 
+    # ratings = db.relationship('Rating') # movie can have multiple ratings
+
     def __repr__(self):
         """Provide helpful representation when printed"""
         return """<Movie movie_id={} title={}>
@@ -53,9 +57,20 @@ class Rating(db.Model):
     __tablename__ = "ratings"
 
     rating_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    movie_id = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, nullable=False)
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.movie_id'), nullable=False) #foreign key
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False) #foreign key
     score = db.Column(db.Integer, nullable=False)
+
+    # define relationships between Rating <> User, Rating <> Movie
+    # movie = db.relationship('Movie') # rating has 1 movie
+    # user = db.relationship('User') # rating has 1 user
+    # user = db.relationship("User", backref='ratings')
+    # movie = db.relationship('Movie', backref='ratings')
+    movie = db.relationship('Movie', backref=db.backref('ratings', order_by=rating_id))
+    user = db.relationship('User', backref=db.backref('ratings', order_by=rating_id))
+
+    # documentation on backref: https://docs.sqlalchemy.org/en/latest/orm/backref.html
+    # order_by parameter in the backref function determines what to sort the ratings by
 
     def __repr__(self):
         """Provide helpful representation when printed"""
