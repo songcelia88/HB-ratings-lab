@@ -9,4 +9,12 @@
 <h2>Users</h2>
 <p><a href="/users">View all users</a></p>
 
+{% if isLoggedIn %}
+	<h3><a href='/logout'>Log Out</a></h3>
+{% else %}
+	<h3><a href='/login'>Log In</a></h3>
+{% endif %}
+
+<h3><a href='/register'>Sign Up</a></h3>
+
 {% endblock %}

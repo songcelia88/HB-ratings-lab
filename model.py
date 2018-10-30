@@ -66,8 +66,8 @@ class Rating(db.Model):
     # user = db.relationship('User') # rating has 1 user
     # user = db.relationship("User", backref='ratings')
     # movie = db.relationship('Movie', backref='ratings')
-    movie = db.relationship('Movie', backref=db.backref('ratings', order_by=rating_id))
-    user = db.relationship('User', backref=db.backref('ratings', order_by=rating_id))
+    movie = db.relationship('Movie', backref=db.backref('ratings', order_by=movie_id))
+    user = db.relationship('User', backref=db.backref('ratings', order_by=movie_id))
 
     # documentation on backref: https://docs.sqlalchemy.org/en/latest/orm/backref.html
     # order_by parameter in the backref function determines what to sort the ratings by

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %} - {{ user.user_id }} Details {% endblock %}
+
+{% block content %}
+
+<style>
+	.rating-table {
+		text-align: center;
+	    width: 50%;
+	}
+
+	.rating-table-cell {
+	    border: 1px solid #dddddd;
+	    text-align: left;
+	    padding: 8px;
+	}
+
+	tr:nth-child(even) {
+	    background-color: #dddddd;
+	}
+</style>
+
+<h2>Basic Information</h2>
+
+<ul>
+	<li>User Id: {{ user.user_id }}</li>
+	<li>Email: {{ user.email }}</li>
+	<li>Age: {{ user.age }}</li>
+	<li>Zipcode: {{ user.zipcode }}</li>
+</ul>
+
+<h2>Ratings:</h2>
+
+<table class='rating-table'>
+	<tr class='rating-table-cell'>
+		<th class='rating-table-cell'>Movie</th>
+		<th class='rating-table-cell'>Score</th>
+	</tr>
+	{% for rating in user.ratings %}
+		<tr class='rating-table-cell'>
+			<td class='rating-table-cell'>{{ rating.movie.title }}</td>
+			<td class='rating-table-cell'>{{ rating.score }}</td>
+		</tr>
+	{% endfor %}
+</table>
+
+{% endblock %}
