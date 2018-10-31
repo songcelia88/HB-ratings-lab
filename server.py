@@ -56,6 +56,19 @@ def show_movies():
     return render_template('movies.html', movies = all_movies)
 
 
+@app.route('/movies/<int:movie_id>')
+def show_movie_detail(movie_id):
+    """Show details for one movie"""
+    movie = db.session.query(Movie).filter(Movie.movie_id == movie_id).first()
+
+    # To Do: make the released date the right format
+    # To Do: check if the user is logged in
+
+    return render_template('movie-detail.html', movie=movie)
+
+# To Do: make a route to update or set rating for movie (from the movies page)
+
+
 @app.route('/register')
 def show_register_form():
     """Display the registration form"""
