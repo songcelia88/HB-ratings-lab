@@ -65,15 +65,27 @@ class User(db.Model):
 
         for rating in other_ratings:
             similarity_pair = (self.similarity(rating.user), rating.score)
+            # print(similarity_pair)
             similarities.append(similarity_pair)
+            print(similarities)
 
         # sorted_users = sorted(similarities, reverse=True)
         similarities.sort(reverse=True)
 
-        sim, score = similarities[0] # tuple (similarity score, user_id)
+        # filter out the negative similarities
+        similarities = [(sim, score) for sim, score in similarities if sim > 0]
+        print(similarities)
 
-        predicted_score = score * sim
-        return predicted_score
+        # if it's all negative similarities and similarities is empty, then return None
+        if not similarities:
+            return None
+
+        # doing weighted average: sum(score*sim) / sum(sim)
+        numerator = sum([score * sim for sim, score in similarities])
+        denominator = sum([sim for sim, score in similarities])
+
+        # predicted_score = score * sim
+        return numerator / denominator
 
 
     def __repr__(self):

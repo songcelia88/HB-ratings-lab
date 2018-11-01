@@ -43,6 +43,11 @@
 	</form>
 {% endif %}
 
+	<p>Average Rating for this movie is: {{ average_rating }}</p>
+{% if prediction %}
+	<p>We predict that you will rate this movie: {{ prediction }}</p>
+{% endif %}
+
 <h2>Ratings:</h2>
 
 <table class='rating-table'>

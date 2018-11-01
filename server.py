@@ -6,7 +6,7 @@ from flask import Flask, render_template, redirect, request, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 
 from model import User, Rating, Movie, connect_to_db, db
-
+import math
 
 app = Flask(__name__)
 
@@ -59,14 +59,71 @@ def show_movies():
 @app.route('/movies/<int:movie_id>')
 def show_movie_detail(movie_id):
     """Show details for one movie"""
-    movie = db.session.query(Movie).filter(Movie.movie_id == movie_id).first()
-
+    movie = Movie.query.get(movie_id)
+    
     # To Do: make the released date the right format
 
     # check if the user is logged in and pass to template
     is_logged_in = session.get('user_id')
 
-    return render_template('movie-detail.html', movie=movie, isLoggedIn=is_logged_in)
+    prediction = None
+
+    # find the average rating
+    rating_scores =[rating.score for rating in movie.ratings]
+    average_rating = round(float(sum(rating_scores)) / len(rating_scores),2)
+    print("average rating is ", average_rating)
+
+    # if user is logged in and does not have a rating, then predict their rating
+    # if user is logged in and does have a rating, no prediction needed
+    if is_logged_in:
+        user = User.query.get(is_logged_in)
+        user_rating = Rating.query.filter(Rating.movie_id == movie_id, Rating.user_id==is_logged_in).first()
+        if not user_rating and user: #if no rating exists and user exists
+            prediction = math.floor(user.predict_rating(movie))
+            print("prediction is ", prediction)
+    else:
+        user_rating = None
+
+    if prediction:
+        effective_rating = prediction
+    elif user_rating:
+        effective_rating = user_rating.score
+    else: # are we ever going to encounter this?
+        effective_rating = None
+
+    # get the eye's rating
+    eye = User.query.get(948)
+    eye_rating = Rating.query.filter(Rating.user_id == eye.user_id, Rating.movie_id == movie_id).first()
+
+    BERATEMENT_MESSAGES = [
+        "I suppose you don't have such bad taste after all.",
+        "I regret every decision that I've ever made that has " +
+            "brought me to listen to your opinion.",
+        "Words fail me, as your taste in movies has clearly " +
+            "failed you.",
+        "That movie is great. For a clown to watch. Idiot.",
+        "Words cannot express the awfulness of your taste."
+    ]
+
+    if eye_rating is None:
+        eye_rating = eye.predict_rating(movie)
+        # this currently returns none for the eye for most movies?
+    else:
+        eye_rating = eye_rating.score
+
+    print("eye rating is " , eye_rating)
+    # if eye_rating and effective_rating:
+    #     difference = abs(eye_rating - effective_rating)
+    #     beratement = BERATEMENT_MESSAGES[int(difference)]
+    #     print(beratement)
+    # else:
+    #     beratement = None
+
+    return render_template('movie-detail.html', 
+                            movie=movie, 
+                            isLoggedIn=is_logged_in, 
+                            prediction = prediction, 
+                            average_rating=average_rating)
 
 
 @app.route('/set-rating', methods=["POST"])
