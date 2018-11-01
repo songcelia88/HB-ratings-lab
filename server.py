@@ -62,11 +62,40 @@ def show_movie_detail(movie_id):
     movie = db.session.query(Movie).filter(Movie.movie_id == movie_id).first()
 
     # To Do: make the released date the right format
-    # To Do: check if the user is logged in
 
-    return render_template('movie-detail.html', movie=movie)
+    # check if the user is logged in and pass to template
+    is_logged_in = session.get('user_id')
 
-# To Do: make a route to update or set rating for movie (from the movies page)
+    return render_template('movie-detail.html', movie=movie, isLoggedIn=is_logged_in)
+
+
+@app.route('/set-rating', methods=["POST"])
+def set_movie_rating():
+    """Set a rating for a movie or update the rating if it exists already"""
+    
+    # get the relevant information
+    movie_id = int(request.form.get('movie_id'))
+    score = int(request.form.get('score'))
+    user_id = session.get('user_id')
+    print("movie id is {} and score submitted is {}".format(movie_id, score))
+
+    # grab the rating for that movie and user
+    rating = db.session.query(Rating).filter(Rating.movie_id == movie_id, Rating.user_id == user_id).first()
+
+    if rating:
+        # if the rating does already exist, just update it
+        rating.score = score
+        flash("Your score was updated!")
+    else:
+        # make a new rating and add it
+        rating = Rating(movie_id=movie_id, user_id=user_id, score=score)
+        db.session.add(rating)
+
+        flash("Your score was submitted!")
+
+    db.session.commit()
+
+    return redirect('/movies')
 
 
 @app.route('/register')

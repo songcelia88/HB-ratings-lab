@@ -32,6 +32,16 @@
 </ul>
 
 <!-- TO DO: if the user is logged in, show a form where the person updates or sets a new rating for this movie -->
+{% if isLoggedIn %}
+	<form action="/set-rating" method="POST">
+		<h2>Rate this Movie</h2>
+		<p>On a scale of 1 (ugh, the worst) to 5 (omg, amazing), how would you rate this movie?</p>
+		<input type="number" min="1" max="5" name="score">
+		<input type="hidden" name="movie_id" value="{{ movie.movie_id }}">
+
+		<input type="submit">
+	</form>
+{% endif %}
 
 <h2>Ratings:</h2>
 

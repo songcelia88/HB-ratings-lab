@@ -52,7 +52,7 @@ def load_movies(filename):
             # print("movie: {}, date: {}".format(title, date))
             imdb_url = info[4]
 
-            #do i need to do set_val function for Movies as well?
+            #do i need to do set_val function for Movies as well? we aren't adding movie so I guess not...
             movie = Movie(movie_id=movie_id,title=title,released_at=released_at, imdb_url=imdb_url)
 
             db.session.add(movie)
